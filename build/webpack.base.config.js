@@ -30,6 +30,7 @@ module.exports = {
             _npm: path.join(__dirname, '..', 'node_modules'),
             _scss: path.join(src, 'assets', 'scss'),
             _store: path.join(src, 'store'),
+            _utils: path.join(app, 'utils'),
             _views: path.join(app, 'views'),
             _mixins: path.join(app, 'mixins'),
             _config: path.join(__dirname, '..', 'config'),

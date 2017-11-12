@@ -1,12 +1,13 @@
 import BaseService from '_services/base'
+import { deviceLimit } from '_utils/device'
 
 class GamesService extends BaseService {
 
-    getGames (limit = 10, offset = 0) {
+    get (offset = 0) {
         return this.request('/games/top', {
-            limit,
+            limit: deviceLimit(),
             offset
-        })
+        }).then(response => response.top.map(item => item.game))
     }
 }
 
