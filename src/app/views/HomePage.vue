@@ -1,10 +1,22 @@
 <template>
     <div class="homepage">
         <nav class="navbar navbar-expand-lg navbar-light bg-dark">
-            <form class="form-inline my-2 my-lg-0">
-                <input v-model="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            </form>
+            <input v-model="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <div>
+                <button
+                    type="button"
+                    @click="sort('popularity')"
+                    :class="['btn btn-primary btn-sm', { 'active': (filter === 'popularity' || search !== '') }]"
+                >Popularidade</button>
+                <button
+                    type="button"
+                    @click="sort('viewers')"
+                    :disabled="search !== ''"
+                    :class="['btn btn-primary btn-sm', { 'active': filter === 'viewers' }]"
+                >Visualizações</button>
+            </div>
         </nav>
+
         <div class="container" ref="gamescontent">
             <div class="row">
                 <div class="col-sm-6 col-md-4 col-lg-3" v-for="(item, index) in games" :key="index">
@@ -13,8 +25,18 @@
                 </div>
             </div>
         </div>
-        <div v-if="loading" class="loading" :style="`background-image: url(${require('_img/loading.gif')}`"></div>
-        <div v-if="!loading && games === null" class="gameover" :style="`background-image: url(${require('_img/gameover.gif')}`"></div>
+
+        <div
+            v-if="loading"
+            class="loading"
+            :style="`background-image: url(${require('_img/loading.gif')}`"
+        ></div>
+
+        <div
+            class="gameover"
+            v-if="!loading && (games === null || games.length === 0)"
+            :style="`background-image: url(${require('_img/gameover.gif')}`"
+        ></div>
     </div>
 </template>
 
@@ -29,6 +51,7 @@
             return {
                 games: [],
                 search: '',
+                filter: 'popularity',
                 loading: true
             }
         },
@@ -36,6 +59,7 @@
         watch: {
             search () {
                 this.games = []
+                this.filter = 'popularity'
                 this.requestGames()
             }
         },
@@ -50,8 +74,10 @@
                         .then(response => {
                             if (offset === 0) {
                                 this.games = response
+                                this.sort(this.filter)
                             } else {
                                 this.games = this.games.concat(response)
+                                this.sort(this.filter)
                             }
                             this.loading = false
                         })
@@ -65,6 +91,7 @@
                             .then(response => {
                                 this.games = response
                                 this.loading = false
+                                this.sort('popularity')
                             })
                             .catch(() => {
                                 this.games = []
@@ -72,6 +99,11 @@
                             })
                     }, 500)
                 }
+            },
+
+            sort (filter) {
+                this.games.sort((a, b) => b[filter] - a[filter])
+                this.filter = filter
             }
         },
 

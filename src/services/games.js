@@ -7,7 +7,11 @@ class GamesService extends BaseService {
         return this.request('/games/top', {
             limit: deviceLimit(),
             offset
-        }).then(response => response.top.map(item => item.game))
+        }).then(response => response.top.map(item => {
+            const game = item.game
+            game.viewers = item.viewers
+            return game
+        }))
     }
 }
 
