@@ -8,4 +8,8 @@
     }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+</style>
