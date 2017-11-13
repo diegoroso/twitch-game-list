@@ -1,5 +1,5 @@
 import BaseService from '_services/base'
-import { deviceLimit } from '_utils/device'
+import { deviceLimit } from '_utils/index'
 
 class GamesService extends BaseService {
 
@@ -10,6 +10,7 @@ class GamesService extends BaseService {
         }).then(response => response.top.map(item => {
             const game = item.game
             game.viewers = item.viewers
+            game.channels = item.channels
             return game
         }))
     }

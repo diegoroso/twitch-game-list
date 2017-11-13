@@ -1,33 +1,34 @@
 <template>
-    <div class="homepage">
-        <nav class="homepage__navbar d-flex flex-lg-column navbar navbar-expand-lg navbar-light bg-dark">
+    <div class="home-page">
+        <nav class="home-page__navbar d-flex flex-lg-column navbar">
             <input
                 v-model="search"
-                class="homepage__navbar__search form-control"
+                class="home-page__navbar__search form-control"
                 type="search"
                 placeholder="Search"
                 aria-label="Search" />
-            <div class="homepage__navbar__btns d-flex flex-row-reverse">
+            <div class="home-page__navbar__btns d-flex align-items-center flex-row-reverse">
                 <button
                     type="button"
                     @click="sort('popularity')"
-                    :class="['btn btn-primary btn-sm', { 'active': (filter === 'popularity' || search !== '') }]"
+                    :class="['btn btn-outline-info btn-sm', { 'active': (filter === 'popularity' || search !== '') }]"
                 >Popularidade</button>
                 <button
                     type="button"
                     @click="sort('viewers')"
                     :disabled="search !== ''"
-                    :class="['btn btn-primary btn-sm', { 'active': filter === 'viewers' }]"
+                    :class="['btn btn-outline-info btn-sm', { 'active': filter === 'viewers' }]"
                 >Visualizações</button>
+                <p>Filtrar por:</p>
             </div>
         </nav>
 
-        <div class="container homepage__container">
+        <div class="container home-page__container">
             <div class="row">
-                <div class="homepage__container__gamer col-sm-6 col-md-4 col-lg-3" v-for="(item, index) in games" :key="index">
-                    <div>
+                <div class="home-page__container__gamer col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center" v-for="(item, index) in games" :key="index">
+                    <div @click="gameDetails(item)" class="link">
                         <img :src="item.box.large" alt="game.game.name">
-                        <div class="homepage__container__gamer__title d-flex justify-content-center align-items-center" v-text="item.name"></div>
+                        <div class="home-page__container__gamer__title d-flex justify-content-center align-items-center" v-text="item.name"></div>
                     </div>
                 </div>
             </div>
@@ -35,12 +36,12 @@
 
         <div
             v-if="loading"
-            class="homepage__loading"
+            class="home-page__loading"
             :style="`background-image: url(${require('_img/loading.gif')}`"
         ></div>
 
         <div
-            class="homepage__gameover"
+            class="home-page__gameover"
             v-if="!loading && (games === null || games.length === 0)"
             :style="`background-image: url(${require('_img/gameover.gif')}`"
         ></div>
@@ -114,6 +115,11 @@
             sort (filter) {
                 this.games.sort((a, b) => b[filter] - a[filter])
                 this.filter = filter
+            },
+
+            gameDetails (game) {
+                this.$store.dispatch('setGame', game)
+                this.$router.push('/details')
             }
         },
 
@@ -128,7 +134,9 @@
                     if (scroll >= elementSize) {
                         if (!this.loading) {
                             this.requestGames()
-                            document.documentElement.scrollTop = elementSize
+                            setTimeout(() => {
+                                document.documentElement.scrollTop = elementSize
+                            }, 100)
                         }
                     }
                 }
@@ -140,12 +148,14 @@
 </script>
 
 <style lang="scss" scoped>
-    .homepage {
+    .home-page {
 
         &__navbar {
             width: 100%;
             z-index: 1;
             position: fixed;
+            box-shadow: 1px 1px 10px #000;
+            background-color: #6441a5;
 
             &___search {
                 width: 100%;
@@ -155,6 +165,14 @@
                 width: 100%;
                 margin-top: 8px;
 
+                p {
+                    color: #fff;
+                    margin: 0;
+                    font-size: 14px;
+                    text-align: right;
+                    line-height: 14px;
+                    margin-right: 10px;
+                }
 
                 button {
                     margin: 0 5px;
@@ -164,14 +182,16 @@
         }
 
         &__container {
-            padding-top: 100px;
+            padding-top: 120px;
 
             &__gamer {
                 position: relative;
                 margin-bottom: 15px;
 
-                > div {
+                .link {
                     cursor: pointer;
+                    position: relative;
+                    max-width: 300px;
                 }
 
                 img {
@@ -181,11 +201,10 @@
                 &__title {
                     left: 0;
                     color: #fff;
-                    width: calc(100% - 30px);
+                    width: 100%;
                     bottom: 0;
                     height: 20%;
-                    margin: 0 15px;
-                    padding: 0 15px;
+                    margin: 0;
                     position: absolute;
                     font-size: 18px;
                     text-align: center;
@@ -198,6 +217,7 @@
         &__loading {
             width: 100%;
             height: 150px;
+            margin-top: -60px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -206,6 +226,7 @@
         &__gameover {
             width: 100%;
             height: 150px;
+            margin-top: -50px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
